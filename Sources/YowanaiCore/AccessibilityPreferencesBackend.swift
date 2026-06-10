@@ -3,12 +3,13 @@ import Foundation
 public protocol AccessibilityPreferencesBackend: Sendable {
     func bool(forKey key: String) -> Bool?
     func int(forKey key: String) -> Int?
-    mutating func setBool(_ value: Bool, forKey key: String) -> Bool
-    mutating func setInt(_ value: Int, forKey key: String) -> Bool
+    func setBool(_ value: Bool, forKey key: String) -> Bool
+    func setInt(_ value: Int, forKey key: String) -> Bool
     func synchronize() -> Bool
 }
 
-public struct InMemoryAccessibilityPreferencesBackend: AccessibilityPreferencesBackend, @unchecked Sendable {
+/// Reference-type backend so `MotionCuesSettings` mutations are visible to test holders.
+public final class InMemoryAccessibilityPreferencesBackend: AccessibilityPreferencesBackend, @unchecked Sendable {
     public var storage: [String: Any] = [:]
 
     public init() {}
@@ -23,12 +24,12 @@ public struct InMemoryAccessibilityPreferencesBackend: AccessibilityPreferencesB
         return nil
     }
 
-    public mutating func setBool(_ value: Bool, forKey key: String) -> Bool {
+    public func setBool(_ value: Bool, forKey key: String) -> Bool {
         storage[key] = value
         return true
     }
 
-    public mutating func setInt(_ value: Int, forKey key: String) -> Bool {
+    public func setInt(_ value: Int, forKey key: String) -> Bool {
         storage[key] = value
         return true
     }

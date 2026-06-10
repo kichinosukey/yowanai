@@ -124,6 +124,7 @@ yowanai/
 | 「damaged」/ 開けない（ブラウザ zip） | 展開フォルダで `xattr -cr . && bash install.sh` |
 | メニューがすべて無効 | 非対応 Mac または macOS 26 未満。対応ハードウェア・OS を確認 |
 | 設定変更が反映されない | メニュー上部のエラーメッセージを確認。System Settings で同項目が変更できるか確認 |
+| ドットが出なくなった | `bash scripts/recover-motion-cues.sh` を実行。それでも直らなければ一度ログアウト |
 | 二重起動 | 既存インスタンスが前面に来る（単一インスタンス） |
 
 ## Manual QA（v0.1.0）

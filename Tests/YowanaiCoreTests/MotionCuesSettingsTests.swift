@@ -12,8 +12,8 @@ final class MotionCuesSettingsTests: XCTestCase {
 
         XCTAssertEqual(backend.bool(forKey: "AXSMotionCuesEnabled"), true)
         XCTAssertEqual(backend.int(forKey: "AXSMotionCuesMode"), 1)
-        XCTAssertTrue(backend.setBool(false, forKey: "AXSMotionCuesEnabled"))
-        XCTAssertEqual(backend.bool(forKey: "AXSMotionCuesEnabled"), false)
+        XCTAssertTrue(backend.setInt(0, forKey: "AXSMotionCuesEnabled"))
+        XCTAssertEqual(backend.int(forKey: "AXSMotionCuesEnabled"), 0)
         XCTAssertTrue(backend.synchronize())
     }
 
@@ -40,7 +40,7 @@ final class MotionCuesSettingsTests: XCTestCase {
         settings.moreDots = false
         try settings.save()
 
-        XCTAssertEqual(backend.bool(forKey: "AXSMotionCuesEnabled"), false)
+        XCTAssertEqual(backend.int(forKey: "AXSMotionCuesEnabled"), 0)
         XCTAssertEqual(backend.int(forKey: "AXSMotionCuesMode"), 0)
         XCTAssertEqual(backend.int(forKey: "MotionCuesDotDensity"), 0)
     }

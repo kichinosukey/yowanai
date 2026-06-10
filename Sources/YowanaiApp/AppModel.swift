@@ -21,30 +21,38 @@ final class AppModel {
     }
 
     func setEnabled(_ enabled: Bool) {
-        mutate { $0.isEnabled = enabled }
+        guard isSupported else { return }
+        settings.isEnabled = enabled
+        do {
+            try settings.saveEnabled()
+            lastError = nil
+        } catch {
+            lastError = "設定の変更に失敗しました"
+            refresh()
+        }
     }
 
     func setPattern(_ pattern: MotionPattern) {
-        mutate { $0.pattern = pattern }
+        mutateAppearance { $0.pattern = pattern }
     }
 
     func setTintColor(_ color: MotionTintColor) {
-        mutate { $0.tintColor = color }
+        mutateAppearance { $0.tintColor = color }
     }
 
     func setLargerDots(_ enabled: Bool) {
-        mutate { $0.largerDots = enabled }
+        mutateAppearance { $0.largerDots = enabled }
     }
 
     func setMoreDots(_ enabled: Bool) {
-        mutate { $0.moreDots = enabled }
+        mutateAppearance { $0.moreDots = enabled }
     }
 
-    private func mutate(_ change: (inout MotionCuesSettings) -> Void) {
+    private func mutateAppearance(_ change: (inout MotionCuesSettings) -> Void) {
         guard isSupported else { return }
         change(&settings)
         do {
-            try settings.save()
+            try settings.saveAppearance()
             lastError = nil
         } catch {
             lastError = "設定の変更に失敗しました"

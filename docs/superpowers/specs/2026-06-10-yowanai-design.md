@@ -100,11 +100,17 @@ Read/write via `CFPreferences` (`CFPreferencesCopyValue`, `CFPreferencesSetValue
 
 ## Menu Bar UI
 
-### Icon
+### Status item icon
 
-- **ON:** filled car / motion icon (e.g. SF Symbol `car.fill` with visual "active" treatment)
-- **OFF:** outline variant
-- **Unsupported device:** `car.slash`, grayed out
+Template-style monochrome icons (not the app bundle icon):
+
+| State | Symbol / treatment |
+|-------|-------------------|
+| OFF | `car` (outline) |
+| ON | `car.fill` with small cue dots near the glyph (per preview mock) |
+| Unsupported | `car.slash`, grayed out |
+
+Reference mock: `docs/assets/yowanai-menubar-preview.png`
 
 ### Menu structure
 
@@ -129,6 +135,73 @@ Vehicle Motion Cues          [✓]
 ### State sync
 
 Reload preferences each time the menu opens. This keeps the UI consistent when the user toggles via Control Center or System Settings while Yowanai is running.
+
+## App Icon Design
+
+**Status:** Approved (brainstorming)  
+**Selected direction:** **B — Car + Dots**
+
+### Primary message
+
+**Car comfort while traveling** — the icon should read as “use your Mac in a moving vehicle without feeling sick,” not as a generic accessibility or settings app.
+
+### Motif
+
+| Layer | Description |
+|-------|-------------|
+| Background | Dark charcoal squircle (`#1E1E22` ±), subtle depth for macOS icon mask |
+| Car | Minimal side-view silhouette, centered, light gray (`#E8E8EC` ±) |
+| Corner dots | 4 small cyan dots (`#5AC8FA` ±) near the squircle corners, echoing on-screen Vehicle Motion Cues |
+
+### Excluded elements
+
+- Text / letters (“Y”, “yw”, etc.)
+- System Settings gear
+- Realistic car photography
+- Accessibility universal-access mark
+- Busy motion lines or nausea-related imagery
+
+### Readability constraints
+
+- Recognizable at **16px** and **32px** (Finder / Login Items list)
+- At smallest sizes, **car silhouette + 1–2 dots** must survive; extra dots may merge
+- Generous padding inside the squircle
+
+### Reference mock
+
+Comparison mock (A/B/C): `docs/assets/yowanai-icon-concepts-abc.png`  
+Selected direction: **B — Car + Dots**
+
+### Color palette
+
+| Role | Color |
+|------|-------|
+| Background | `#1E1E22` (approx.) |
+| Car silhouette | `#E8E8EC` (approx.) |
+| Motion cue dots | `#5AC8FA` (approx.) |
+
+Exact values may be tuned during asset production.
+
+### Asset pipeline
+
+Follow the `fm-glance` pattern:
+
+```text
+App/Icon/source-1024.png   # master artwork (1024×1024), motif B
+./scripts/build-icon.sh    # generate AppIcon.iconset + AppIcon.icns
+./scripts/build-app-bundle.sh release
+```
+
+Outputs:
+
+- `App/Icon/AppIcon.icns` → `dist/Yowanai.app/Contents/Resources/AppIcon.icns`
+- `CFBundleIconFile` = `AppIcon` in `App/Info.plist`
+
+### Icon non-goals (v1)
+
+- App Store marketing artwork
+- Animated icon
+- Alternate light-mode app icon
 
 ## Components
 
@@ -224,3 +297,4 @@ Repository name: **yowanai**
 | Distribution | zip + `install.sh` |
 | Shortcuts | Not in v1 |
 | Name | **yowanai** (display: Yowanai) |
+| App icon | **B — Car + Dots** (`docs/assets/yowanai-icon-concepts-abc.png`) |

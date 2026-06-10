@@ -1,0 +1,9 @@
+Yowanai インストール（署名なし）
+
+1. zip を展開
+2. ターミナルで展開フォルダへ移動
+3. 実行:
+
+   xattr -cr . && bash install.sh
+
+対応: macOS 26+ の Vehicle Motion Cues 対応 MacBook

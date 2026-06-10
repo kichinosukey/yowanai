@@ -16,4 +16,32 @@ final class MotionCuesSettingsTests: XCTestCase {
         XCTAssertEqual(backend.bool(forKey: "AXSMotionCuesEnabled"), false)
         XCTAssertTrue(backend.synchronize())
     }
+
+    func testLoadAndSaveRoundTrip() throws {
+        var backend = InMemoryAccessibilityPreferencesBackend()
+        backend.storage = [
+            "AXSMotionCuesEnabled": true,
+            "AXSMotionCuesMode": 1,
+            "AXSMotionCuesTintColor": 2,
+            "MotionCuesDotSize": true,
+            "MotionCuesDotDensity": 2,
+        ]
+        var settings = MotionCuesSettings(backend: backend)
+        settings.load()
+
+        XCTAssertTrue(settings.isEnabled)
+        XCTAssertEqual(settings.pattern, .dynamic)
+        XCTAssertEqual(settings.tintColor.rawValue, 2)
+        XCTAssertTrue(settings.largerDots)
+        XCTAssertTrue(settings.moreDots)
+
+        settings.isEnabled = false
+        settings.pattern = .regular
+        settings.moreDots = false
+        try settings.save()
+
+        XCTAssertEqual(backend.bool(forKey: "AXSMotionCuesEnabled"), false)
+        XCTAssertEqual(backend.int(forKey: "AXSMotionCuesMode"), 0)
+        XCTAssertEqual(backend.int(forKey: "MotionCuesDotDensity"), 0)
+    }
 }

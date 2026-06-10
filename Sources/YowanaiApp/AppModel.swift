@@ -2,11 +2,16 @@ import Foundation
 import Observation
 import YowanaiCore
 
+@MainActor
 @Observable
 final class AppModel {
     private(set) var isSupported = DeviceSupport.isSupported()
     private(set) var lastError: String?
     private var settings = MotionCuesSettings()
+
+    init() {
+        settings.load()
+    }
 
     var isEnabled: Bool { settings.isEnabled }
     var pattern: MotionPattern { settings.pattern }
@@ -15,9 +20,16 @@ final class AppModel {
     var moreDots: Bool { settings.moreDots }
 
     func refresh() {
-        settings = MotionCuesSettings()
         settings.load()
         lastError = nil
+    }
+
+    /// Defer refresh until after the current menu layout pass to avoid Swift exclusivity crashes.
+    func refreshAfterMenuOpens() {
+        Task { @MainActor in
+            await Task.yield()
+            refresh()
+        }
     }
 
     func setEnabled(_ enabled: Bool) {

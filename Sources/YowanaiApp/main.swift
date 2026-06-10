@@ -1,0 +1,3 @@
+import YowanaiCore
+
+print("yowanai")

@@ -1,3 +1,0 @@
-import YowanaiCore
-
-print("yowanai")

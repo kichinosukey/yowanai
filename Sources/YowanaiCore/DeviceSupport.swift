@@ -14,14 +14,22 @@ public enum DeviceSupport {
         "MacBookPro15,4",
     ]
 
+    private static let desktopPrefixes = ["Macmini", "MacStudio", "MacPro", "iMac", "Xserve"]
+
     public static func isSupported(
         modelIdentifier: String = currentModelIdentifier(),
         osMajor: Int = ProcessInfo.processInfo.operatingSystemVersion.majorVersion
     ) -> Bool {
         guard osMajor >= 26 else { return false }
-        guard modelIdentifier.hasPrefix("MacBook") else { return false }
         if modelIdentifier.localizedCaseInsensitiveContains("Neo") { return false }
-        return !blockedModels.contains(modelIdentifier)
+        if blockedModels.contains(modelIdentifier) { return false }
+        return isPortableMac(modelIdentifier)
+    }
+
+    static func isPortableMac(_ modelIdentifier: String) -> Bool {
+        if modelIdentifier.hasPrefix("MacBook") { return true }
+        if desktopPrefixes.contains(where: { modelIdentifier.hasPrefix($0) }) { return false }
+        return modelIdentifier.range(of: #"^Mac\d+,\d+$"#, options: .regularExpression) != nil
     }
 
     public static func currentModelIdentifier() -> String {

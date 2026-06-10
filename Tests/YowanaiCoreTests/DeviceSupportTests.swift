@@ -14,4 +14,8 @@ final class DeviceSupportTests: XCTestCase {
     func testOldMacOSIsUnsupported() {
         XCTAssertFalse(DeviceSupport.isSupported(modelIdentifier: "Mac14,5", osMajor: 25))
     }
+
+    func testDesktopMacIsUnsupported() {
+        XCTAssertFalse(DeviceSupport.isSupported(modelIdentifier: "Macmini14,3", osMajor: 26))
+    }
 }

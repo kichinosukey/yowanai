@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Observation
 import YowanaiCore
@@ -7,29 +8,36 @@ import YowanaiCore
 final class AppModel {
     private(set) var isSupported = DeviceSupport.isSupported()
     private(set) var lastError: String?
+
+    private(set) var isEnabled = false
+    private(set) var pattern = MotionPattern.regular
+    private(set) var tintColor = MotionTintColor.grayscale
+    private(set) var largerDots = false
+    private(set) var moreDots = false
+
     private var settings = MotionCuesSettings()
 
     init() {
-        settings.load()
-    }
-
-    var isEnabled: Bool { settings.isEnabled }
-    var pattern: MotionPattern { settings.pattern }
-    var tintColor: MotionTintColor { settings.tintColor }
-    var largerDots: Bool { settings.largerDots }
-    var moreDots: Bool { settings.moreDots }
-
-    func refresh() {
-        settings.load()
-        lastError = nil
-    }
-
-    /// Defer refresh until after the current menu layout pass to avoid Swift exclusivity crashes.
-    func refreshAfterMenuOpens() {
-        Task { @MainActor in
-            await Task.yield()
-            refresh()
+        reloadFromSystem()
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.reloadFromSystem()
+            }
         }
+    }
+
+    func reloadFromSystem() {
+        settings.load()
+        isEnabled = settings.isEnabled
+        pattern = settings.pattern
+        tintColor = settings.tintColor
+        largerDots = settings.largerDots
+        moreDots = settings.moreDots
+        lastError = nil
     }
 
     func setEnabled(_ enabled: Bool) {
@@ -37,19 +45,20 @@ final class AppModel {
         settings.isEnabled = enabled
         do {
             try settings.saveEnabled()
+            isEnabled = enabled
             lastError = nil
         } catch {
             lastError = "設定の変更に失敗しました"
-            refresh()
+            reloadFromSystem()
         }
     }
 
-    func setPattern(_ pattern: MotionPattern) {
-        mutateAppearance { $0.pattern = pattern }
+    func setPattern(_ value: MotionPattern) {
+        mutateAppearance { $0.pattern = value }
     }
 
-    func setTintColor(_ color: MotionTintColor) {
-        mutateAppearance { $0.tintColor = color }
+    func setTintColor(_ value: MotionTintColor) {
+        mutateAppearance { $0.tintColor = value }
     }
 
     func setLargerDots(_ enabled: Bool) {
@@ -65,10 +74,14 @@ final class AppModel {
         change(&settings)
         do {
             try settings.saveAppearance()
+            pattern = settings.pattern
+            tintColor = settings.tintColor
+            largerDots = settings.largerDots
+            moreDots = settings.moreDots
             lastError = nil
         } catch {
             lastError = "設定の変更に失敗しました"
-            refresh()
+            reloadFromSystem()
         }
     }
 }

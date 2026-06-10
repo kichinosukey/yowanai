@@ -18,33 +18,39 @@ struct MenuContent: View {
 
         Divider()
 
-        Menu {
-            Picker("パターン", selection: Binding(
-                get: { model.pattern },
-                set: { model.setPattern($0) }
-            )) {
-                ForEach(MotionPattern.allCases, id: \.self) { pattern in
-                    Text(pattern.displayName).tag(pattern)
+        Text("パターン")
+            .disabled(!model.isSupported)
+        ForEach(MotionPattern.allCases, id: \.self) { value in
+            Button {
+                model.setPattern(value)
+            } label: {
+                HStack {
+                    Image(systemName: "checkmark")
+                        .opacity(model.pattern == value ? 1 : 0)
+                    Text(value.displayName)
                 }
             }
-        } label: {
-            Text("パターン")
+            .disabled(!model.isSupported)
         }
-        .disabled(!model.isSupported)
 
-        Menu {
-            Picker("色", selection: Binding(
-                get: { model.tintColor },
-                set: { model.setTintColor($0) }
-            )) {
-                ForEach(MotionTintColor.allCases, id: \.self) { color in
-                    Text(color.displayName).tag(color)
+        Divider()
+
+        Text("色")
+            .disabled(!model.isSupported)
+        ForEach(MotionTintColor.allCases, id: \.self) { value in
+            Button {
+                model.setTintColor(value)
+            } label: {
+                HStack {
+                    Image(systemName: "checkmark")
+                        .opacity(model.tintColor == value ? 1 : 0)
+                    Text(value.displayName)
                 }
             }
-        } label: {
-            Text("色")
+            .disabled(!model.isSupported)
         }
-        .disabled(!model.isSupported)
+
+        Divider()
 
         Toggle("大きいドット", isOn: Binding(
             get: { model.largerDots },

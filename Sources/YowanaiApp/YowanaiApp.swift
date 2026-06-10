@@ -18,7 +18,6 @@ struct YowanaiApp: App {
     var body: some Scene {
         MenuBarExtra {
             MenuContent(model: model)
-                .onAppear { model.refreshAfterMenuOpens() }
         } label: {
             StatusIconLabel(
                 isSupported: model.isSupported,
